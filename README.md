@@ -1,10 +1,11 @@
 # wyzectl
 
-Control Wyze lights from the command line, or from an AI agent over MCP.
+Control Wyze lights and plugs from the command line, or from an AI agent over MCP.
 
-`wyzectl` covers **lights only**: Wyze bulbs (white and color) and light strips, plus the rooms
-and groups you set up in the Wyze app. It can also list every device on the account, read-only.
-There are no camera, lock or other device controls, on purpose.
+`wyzectl` covers **lights and plugs**: Wyze bulbs (white and color) and light strips, the rooms
+and groups you set up in the Wyze app, and plug on/off (indoor plugs and the outdoor plug's
+sockets). It can also list every device on the account, read-only. There are no camera, lock or
+other device controls, on purpose.
 
 It is a thin layer over [wyze-sdk](https://github.com/shauntarves/wyze-sdk), which talks to the
 same cloud API the Wyze app uses. That API is not publicly documented, so Wyze can change it at
@@ -13,7 +14,7 @@ any time; when it does, this tool breaks until wyze-sdk catches up.
 ## Install
 
 ```bash
-uv tool install git+https://github.com/heka-vault/wyze@v0.1.1
+uv tool install git+https://github.com/heka-vault/wyze@v0.2.0
 ```
 
 Python 3.12-3.14.
@@ -45,6 +46,8 @@ wyzectl light on "Desk Lamp"
 wyzectl light set desk --brightness 40 --temp 2700
 wyzectl light set "Office Strip" --color ff8800
 wyzectl group off "Living Room"
+wyzectl plugs                                     # plugs with on/off state
+wyzectl plug on "Chair Light"
 wyzectl --json lights
 wyzectl session check                             # is the login working?
 ```
@@ -56,7 +59,7 @@ brightness, temperature or color also turns the light on. Ranges: brightness 1-1
 ## MCP
 
 `wyzectl mcp` runs an MCP server on stdio with tools `list_devices`, `list_lights`, `list_groups`,
-`get_light`, `set_light` and `set_group`. Example client config:
+`get_light`, `set_light`, `set_group`, `list_plugs`, `get_plug` and `set_plug`. Example client config:
 
 ```json
 {

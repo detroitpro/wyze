@@ -33,6 +33,22 @@ def test_set_without_changes_is_refused(lights):
         run(lights, "light", "set", "office")
 
 
+def test_plug_on_text_output(lights, capsys):
+    run(lights, "plug", "on", "bedroom")
+    out = capsys.readouterr().out
+    assert "Bedroom Lamp" in out and "on" in out and "indoor" in out
+
+
 def test_no_camera_or_lock_commands():
     choices = cli.parser()._subparsers._group_actions[0].choices
-    assert set(choices) == {"devices", "lights", "groups", "light", "group", "session", "mcp"}
+    assert set(choices) == {
+        "devices",
+        "lights",
+        "groups",
+        "light",
+        "group",
+        "plugs",
+        "plug",
+        "session",
+        "mcp",
+    }
