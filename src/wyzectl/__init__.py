@@ -1,3 +1,3 @@
-"""Control Wyze lights from the command line or an MCP client."""
+"""Control Wyze lights and plugs from the command line or an MCP client."""
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"

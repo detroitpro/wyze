@@ -1,7 +1,7 @@
 [project]
 name = "wyzectl"
-version = "0.1.1"
-description = "Control Wyze lights from the command line or an MCP client"
+version = "0.2.0"
+description = "Control Wyze lights and plugs from the command line or an MCP client"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12,<3.15"

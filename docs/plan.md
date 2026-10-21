@@ -38,6 +38,11 @@ account:
 - Groups: `device_group_list` entries have `group_name` and `device_list` of `{device_mac}`.
 - Found: `HL_A19C2` color bulbs missing from the light list (fixed in v0.1.1).
 
+## v0.2.0
+
+- Plugs: list with state, on/off (indoor `WLPP1CFH`/`WLPP1`, outdoor `WLPPO`/`WLPPO-SUB`). The owner
+  asked for it: two of their plugs power lamps. No timers, away mode or usage records.
+
 ## Later
 
 - Scenes (save and restore the state of a group).

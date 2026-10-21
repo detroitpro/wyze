@@ -93,6 +93,52 @@ class FakeBulbs:
         self._state(device_mac).color = color
 
 
+def plug(name, mac, model="WLPP1CFH", online=True, on=False):
+    return SimpleNamespace(
+        nickname=name,
+        mac=mac,
+        product=SimpleNamespace(model=model),
+        is_online=online,
+        type="Plug",
+        state=SimpleNamespace(on=on),
+    )
+
+
+def default_plugs():
+    return [
+        plug("Chair Light", "CCCC00000001", on=True),
+        plug("Bedroom Lamp", "CCCC00000002"),
+        plug("Patio Socket 1", "CCCC00000003", model="WLPPO-SUB", online=False),
+    ]
+
+
+class FakePlugs:
+    def __init__(self, client):
+        self.client = client
+
+    def list(self):
+        self.client.check()
+        return list(self.client.plugs_data)
+
+    def info(self, *, device_mac):
+        self.client.check()
+        for p in self.client.plugs_data:
+            if p.mac == device_mac:
+                return SimpleNamespace(is_on=p.state.on)
+        return None
+
+    def _switch(self, mac, on):
+        self.client.check()
+        self.client.calls.append(("plug_on" if on else "plug_off", mac))
+        next(p for p in self.client.plugs_data if p.mac == mac).state.on = on
+
+    def turn_on(self, *, device_mac, device_model):
+        self._switch(device_mac, True)
+
+    def turn_off(self, *, device_mac, device_model):
+        self._switch(device_mac, False)
+
+
 class FakeClient:
     """Stands in for wyze_sdk.Client. ``expired`` makes the next call fail with code 2001."""
 
@@ -121,6 +167,8 @@ class FakeClient:
         self.expired = False
         self.refresh_fails = False
         self.bulbs = FakeBulbs(self)
+        self.plugs_data = default_plugs()
+        self.plugs = FakePlugs(self)
 
     def check(self):
         if self.expired:

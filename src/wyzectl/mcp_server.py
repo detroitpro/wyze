@@ -1,4 +1,7 @@
-"""MCP server (stdio) exposing the same light controls as the CLI. No camera or lock tools."""
+"""MCP server (stdio) exposing the same light and plug controls as the CLI.
+
+No camera or lock tools.
+"""
 
 from __future__ import annotations
 
@@ -7,17 +10,44 @@ from dataclasses import asdict
 from mcp.server.fastmcp import FastMCP
 
 from wyzectl.lights import Lights
+from wyzectl.plugs import Plugs
 from wyzectl.session import Session
 
 mcp = FastMCP("wyze")
-_lights: Lights | None = None
+_session: Session | None = None
+
+
+def _shared_session() -> Session:
+    global _session
+    if _session is None:
+        _session = Session()
+    return _session
 
 
 def lights() -> Lights:
-    global _lights
-    if _lights is None:
-        _lights = Lights(Session())
-    return _lights
+    return Lights(_shared_session())
+
+
+def plugs() -> Plugs:
+    return Plugs(_shared_session())
+
+
+@mcp.tool()
+def list_plugs() -> list[dict]:
+    """All Wyze plugs with on/off state. outdoor: true for the outdoor plug's sockets."""
+    return [x.to_dict() for x in plugs().list()]
+
+
+@mcp.tool()
+def get_plug(name: str) -> dict:
+    """One plug's current state. name: the plug's name (exact, or a unique part of it)."""
+    return plugs().get(name).to_dict()
+
+
+@mcp.tool()
+def set_plug(name: str, on: bool) -> dict:
+    """Turn a plug on or off. Returns the state after the change."""
+    return plugs().set(name, on=on).to_dict()
 
 
 @mcp.tool()
