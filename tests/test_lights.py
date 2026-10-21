@@ -36,6 +36,17 @@ def test_list_includes_state_and_kind(lights):
     assert by_name["Office Strip"].kind == "strip"
 
 
+def test_color_bulb_v2_is_a_known_mesh_bulb():
+    from wyze_sdk.models.devices import DeviceModels
+
+    from wyzectl.lights import kind_of, temp_range
+
+    assert "HL_A19C2" in DeviceModels.BULB
+    assert "HL_A19C2" in DeviceModels.MESH_BULB
+    assert kind_of("HL_A19C2") == "color"
+    assert temp_range("HL_A19C2") == (1800, 6500)
+
+
 def test_devices_is_read_only_listing_including_cameras(lights):
     types = {d.name: d.type for d in lights.devices()}
     assert types["Front Door"] == "Camera"
@@ -44,6 +55,25 @@ def test_devices_is_read_only_listing_including_cameras(lights):
 def test_resolve_exact_then_unique_substring(lights):
     assert lights.resolve("living room lamp").name == "Living Room Lamp"
     assert lights.resolve("strip").name == "Office Strip"
+
+
+def test_names_are_trimmed_and_case_breaks_exact_ties(tmp_path):
+    from tests.fakes import bulb
+
+    client = FakeClient(
+        token="t",
+        refresh_token="r",
+        bulbs=[
+            bulb("Washroom", "AAAA00000011", "HL_HWB2"),
+            bulb("washroom ", "AAAA00000012", "HL_A19C2"),
+        ],
+    )
+    lights = Lights(fake_session(client, tmp_path))
+    assert sorted(x.name for x in lights.list(state=False)) == ["Washroom", "washroom"]
+    assert lights.resolve("washroom").mac == "AAAA00000012"
+    assert lights.resolve("Washroom").mac == "AAAA00000011"
+    with pytest.raises(LightError, match="more than one"):
+        lights.resolve("WASHROOM")
 
 
 def test_resolve_ambiguous_and_missing(lights):

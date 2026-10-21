@@ -13,7 +13,7 @@ any time; when it does, this tool breaks until wyze-sdk catches up.
 ## Install
 
 ```bash
-uv tool install git+https://github.com/heka-vault/wyze@v0.1.0
+uv tool install git+https://github.com/heka-vault/wyze@v0.1.1
 ```
 
 Python 3.12-3.14.
