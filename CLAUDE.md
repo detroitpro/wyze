@@ -53,6 +53,6 @@ uv run wyzectl --help
 
 ## Workflow
 
-Work happens in GitHub issues and pull requests on `heka-vault/wyze`. One issue per bug or
+Work happens in GitHub issues and pull requests on `detroitpro/wyze`. One issue per bug or
 feature; the PR closes it. CI (`.github/workflows/ci.yml`) must be green before merge. Releases
 are tags `vX.Y.Z` with the version bumped in `pyproject.toml` and `src/wyzectl/__init__.py`.
