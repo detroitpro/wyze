@@ -23,11 +23,9 @@ exposes lights only.
 Built and tested against a fake client only. Before relying on these, confirm against a real
 account:
 
-1. **State after a change.** `set` re-reads the light right after changing it; Wyze may report the
-   old state for a moment.
-2. **Light strips.** Color and temperature go through wyze-sdk's mesh path; check a strip really
+1. **Light strips.** Color and temperature go through wyze-sdk's mesh path; check a strip really
    changes.
-3. **Color Bulb v2 (`HL_A19C2`).** wyze-sdk 2.3.9 doesn't list it; wyzectl registers it as a mesh
+2. **Color Bulb v2 (`HL_A19C2`).** wyze-sdk 2.3.9 doesn't list it; wyzectl registers it as a mesh
    bulb (same family as BR30). Check on/off, brightness and color actually take effect.
 
 ## Verified against a real account (v0.1.0, 2026-10-20)
@@ -37,6 +35,9 @@ account:
   (`WLPA19C`) bulbs.
 - Groups: `device_group_list` entries have `group_name` and `device_list` of `{device_mac}`.
 - Found: `HL_A19C2` color bulbs missing from the light list (fixed in v0.1.1).
+- Changes on BR30 color bulbs (`HL_BR30C`): on/off, brightness, color; ~0.3 s per command; the state
+  read right after a change is already current.
+- Still unverified live: color temperature, white bulbs, plugs.
 
 ## v0.2.0
 
