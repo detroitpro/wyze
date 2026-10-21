@@ -1,6 +1,6 @@
 [project]
 name = "wyzectl"
-version = "0.1.0"
+version = "0.1.1"
 description = "Control Wyze lights from the command line or an MCP client"
 readme = "README.md"
 license = "MIT"

@@ -14,6 +14,14 @@ from wyze_sdk.models.devices import DeviceModels
 
 from wyzectl.session import Session
 
+# Color bulbs Wyze reports as MeshLight that wyze-sdk 2.3.9 doesn't list; without this the SDK
+# drops them from bulbs.list() and sends them non-mesh commands.
+EXTRA_MESH_BULBS = ["HL_A19C2"]
+for _model in EXTRA_MESH_BULBS:
+    for _known in (DeviceModels.MESH_BULB, DeviceModels.BULB):
+        if _model not in _known:
+            _known.append(_model)
+
 WHITE_TEMP = (2700, 6500)
 MESH_TEMP = (1800, 6500)
 HEX_COLOR = re.compile(r"^#?[0-9a-fA-F]{6}$")
@@ -74,7 +82,7 @@ def _model(device: Any) -> str:
 def _light(bulb: Any) -> Light:
     model = _model(bulb)
     return Light(
-        name=bulb.nickname,
+        name=(bulb.nickname or "").strip(),
         mac=bulb.mac,
         model=model,
         kind=kind_of(model),
@@ -102,7 +110,7 @@ class Lights:
         found = self.session.call(lambda c: c.devices_list())
         return [
             Device(
-                name=d.nickname,
+                name=(d.nickname or "").strip(),
                 type=str(getattr(d, "type", "") or ""),
                 model=_model(d),
                 mac=d.mac,
@@ -149,7 +157,8 @@ class Lights:
                 if (mac := item.get("device_mac") or item.get("mac")) in lights
             ]
             if members:
-                result.append(Group(name=g.get("group_name") or "", lights=sorted(members)))
+                name = (g.get("group_name") or "").strip()
+                result.append(Group(name=name, lights=sorted(members)))
         return sorted(result, key=lambda x: x.name.lower())
 
     def set_group(self, group: str, **changes: Any) -> list[Light]:
@@ -217,11 +226,15 @@ def validate(
 
 
 def resolve(name: str, items: list[Any]) -> Any:
-    """Match by exact name (case-insensitive), then MAC, then a unique substring."""
-    want = name.strip().lower()
+    """Exact name (case-insensitive; case breaks a tie), then MAC, then a unique substring."""
+    raw = name.strip()
+    want = raw.lower()
     exact = [x for x in items if x.name.lower() == want]
     if len(exact) == 1:
         return exact[0]
+    same_case = [x for x in exact if x.name == raw]
+    if len(same_case) == 1:
+        return same_case[0]
     by_mac = [x for x in items if getattr(x, "mac", "").lower() == want]
     if len(by_mac) == 1:
         return by_mac[0]

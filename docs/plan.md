@@ -23,13 +23,20 @@ exposes lights only.
 Built and tested against a fake client only. Before relying on these, confirm against a real
 account:
 
-1. **Group shape.** `device_group_list` entries are assumed to have `group_name` and a
-   `device_list` of `{device_mac}`. If groups come back empty while the app shows rooms, this is
-   the first suspect.
-2. **State after a change.** `set` re-reads the light right after changing it; Wyze may report the
+1. **State after a change.** `set` re-reads the light right after changing it; Wyze may report the
    old state for a moment.
-3. **Light strips.** Color and temperature go through wyze-sdk's mesh path; check a strip really
+2. **Light strips.** Color and temperature go through wyze-sdk's mesh path; check a strip really
    changes.
+3. **Color Bulb v2 (`HL_A19C2`).** wyze-sdk 2.3.9 doesn't list it; wyzectl registers it as a mesh
+   bulb (same family as BR30). Check on/off, brightness and color actually take effect.
+
+## Verified against a real account (v0.1.0, 2026-10-20)
+
+- Login with API key, email and password; session cache and reuse.
+- Device list; light state for white (`HL_HWB2`), BR30 color (`HL_BR30C`) and A19 color
+  (`WLPA19C`) bulbs.
+- Groups: `device_group_list` entries have `group_name` and `device_list` of `{device_mac}`.
+- Found: `HL_A19C2` color bulbs missing from the light list (fixed in v0.1.1).
 
 ## Later
 
